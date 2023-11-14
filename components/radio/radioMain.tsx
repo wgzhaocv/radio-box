@@ -22,7 +22,7 @@ import { ClientOnly } from "../clientOnly";
 import React from "react";
 import { sanityDataToChannelList } from "./audioState/dataSource";
 
-const useOnce = (fn: () => void) => {
+export const useOnce = (fn: () => void) => {
   const [called, setCalled] = React.useState(false);
   if (!called) {
     fn();
@@ -31,9 +31,6 @@ const useOnce = (fn: () => void) => {
 };
 
 const MyRadio = (props: { songs: Song[] }) => {
-  useEffect(() => {
-    console.log(props.songs, 1234);
-  }, [props.songs]);
   const dispatch = useDispatch();
   useOnce(() => {
     // get sanity songs

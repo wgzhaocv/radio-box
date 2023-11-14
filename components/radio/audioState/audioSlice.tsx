@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { sanityClient } from "@/sanity/lib/client";
 
-type RadioAudio = {
+export type RadioAudio = {
   title: string;
   url: string;
 };
@@ -13,7 +13,7 @@ export type Audio = RadioAudio & {
   artist: string;
 };
 
-type Channel = {
+export type Channel = {
   name: string;
   audios: Array<Audio> | RadioAudio;
 };
@@ -40,7 +40,7 @@ const initialState: RadioState = {
     url: "",
   },
   isPlaying: false,
-  volume: 50,
+  volume: 0,
   currentTime: 0,
   duration: 0,
 };
@@ -68,6 +68,11 @@ export const radioSlice = createSlice({
       state.currentAudio = action.payload;
     },
     setVolume: (state, action: PayloadAction<number>) => {
+      if (state.volume === 0 && action.payload > 0) {
+        state.isPlaying = true;
+      } else if (state.volume > 0 && action.payload === 0) {
+        state.isPlaying = false;
+      }
       state.volume = action.payload;
     },
     setCurrentTime: (state, action: PayloadAction<number>) => {

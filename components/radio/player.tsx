@@ -2,8 +2,11 @@
 import ReactPlayer from "react-player";
 import { useSelector, useDispatch } from "react-redux";
 import { RadioStoreState } from "./audioState/store";
+import { playNext } from "./audioState/audioSlice";
 
 const Player = () => {
+  const dispatch = useDispatch();
+
   const currentAudio = useSelector(
     (state: RadioStoreState) => state.radioReducer.currentAudio
   );
@@ -17,16 +20,12 @@ const Player = () => {
 
   const { url } = currentAudio;
 
-  console.log("player", url, isPlaying, volume);
-
   return (
     <ReactPlayer
       url={url}
       playing={isPlaying}
       volume={volume / 100}
-      onProgress={(progress) => {
-        // console.log(progress);
-      }}
+      onEnded={() => dispatch(playNext())}
     />
   );
 };

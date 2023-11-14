@@ -5,6 +5,7 @@ import {
   Text,
   RenderTexture,
   OrthographicCamera,
+  FlyControls,
 } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -14,8 +15,10 @@ import { motion } from "framer-motion-3d";
 import SplineLoader from "@splinetool/loader";
 import { useGraph, useLoader } from "@react-three/fiber";
 import type { Object3D } from "three";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RadioStoreState } from "./audioState/store";
+import ThreeAudio from "./3dAudio";
+import { playNext } from "./audioState/audioSlice";
 
 type Output = {
   nodes: Record<string, any>;
@@ -48,8 +51,6 @@ function Screen({ geometry, ...props }: any) {
     (state: RadioStoreState) => state.radioReducer.currentChannel
   );
 
-  console.log("test", isPlaying, audioTitle);
-
   const typeText = currentChannel.name ?? `radio - news Hello World Hello`;
   const title = audioTitle ?? "FM 88.7";
   useEffect(() => {
@@ -60,9 +61,9 @@ function Screen({ geometry, ...props }: any) {
 
   useFrame(() => {
     if (textRef.current && texTitletRef.current) {
-      const textWidth =
-        textRef.current.geometry.boundingBox.max.x -
-        textRef.current.geometry.boundingBox.min.x;
+      //   const textWidth =
+      //     textRef.current.geometry.boundingBox.max.x -
+      //     textRef.current.geometry.boundingBox.min.x;
       const textTitleWidth =
         texTitletRef.current.geometry.boundingBox.max.x -
         texTitletRef.current.geometry.boundingBox.min.x;
@@ -160,19 +161,9 @@ function Scene({
   useMotionValueEvent(y, "change", (latest: number) => {
     setVolume((100 * (latest - min)) / (max - min));
     if (latest === min) {
-      setPowerOn((pre) => {
-        if (pre) {
-          setPlayPause(false);
-        }
-        return false;
-      });
+      setPowerOn(false);
     } else {
-      setPowerOn((pre) => {
-        if (!pre) {
-          setPlayPause(true);
-        }
-        return true;
-      });
+      setPowerOn(true);
     }
   });
 
@@ -664,6 +655,21 @@ type RadioProps = {
 
 const CanvasScene = (props: RadioProps) => {
   const [orbitEnabled, setOrbitEnabled] = useState(true);
+
+  const dispatch = useDispatch();
+
+  const currentAudio = useSelector(
+    (state: RadioStoreState) => state.radioReducer.currentAudio
+  );
+  const isPlaying = useSelector(
+    (state: RadioStoreState) => state.radioReducer.isPlaying
+  );
+
+  const volume = useSelector(
+    (state: RadioStoreState) => state.radioReducer.volume
+  );
+
+  const { url } = currentAudio;
   return (
     <div className="h-full w-screen fixed inset-0">
       <Canvas
@@ -675,6 +681,13 @@ const CanvasScene = (props: RadioProps) => {
         <Suspense fallback={null}>
           <Scene setOrbitEnabled={setOrbitEnabled} {...props} />
         </Suspense>
+        {/* <FlyControls /> */}
+        {/* <ThreeAudio
+          url={url}
+          isPlaying={isPlaying}
+          volume={volume}
+          onEnded={() => dispatch(playNext())}
+        /> */}
         <OrbitControls enabled={orbitEnabled} />
       </Canvas>
     </div>
