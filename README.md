@@ -1,3 +1,3 @@
-This is three.js radio-box based on [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a three.js radio-box based on a Next.js project, bootstrapped with create-next-app.
 
-Currently have some problem with react-three/fiber and next.js so can't  be built.
+Currently, there are some problems with react-three/fiber and Next.js, so it can't be built.
